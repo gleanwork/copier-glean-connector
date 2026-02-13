@@ -22,12 +22,6 @@ Generate a new connector project:
 copier copy gh:gleanwork/glean-connector-template my-connector
 ```
 
-Or from a local clone:
-
-```bash
-copier copy /path/to/glean-connector-template my-connector
-```
-
 The wizard will prompt for project name, connector type, and other options. After generation, the template automatically runs `git init`, `uv sync`, and `ruff format`.
 
 ## Connector Types
@@ -54,13 +48,3 @@ When this template is updated, pull changes into your project:
 copier update
 ```
 
-## Development
-
-To test the template locally:
-
-```bash
-copier copy . /tmp/test-connector --defaults
-cd /tmp/test-connector
-uv sync
-uv run pytest
-```
