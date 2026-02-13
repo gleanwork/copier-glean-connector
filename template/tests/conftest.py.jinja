@@ -1,26 +1,37 @@
+{% if connector_category == 'datasource' %}
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
 import pytest
-{% if connector_category == 'datasource' %}
 
 from {{ module_name }}.models import SourceDocument
-{% else %}
-
-from {{ module_name }}.models import EmployeeRecord
-{% endif %}
 
 MOCK_DATA_PATH = Path(__file__).parent.parent / "src" / "{{ module_name }}" / "mock_data.json"
 
 
 @pytest.fixture()
-{% if connector_category == 'datasource' %}
 def mock_data() -> list[SourceDocument]:
-{% else %}
-def mock_data() -> list[EmployeeRecord]:
-{% endif %}
     """Load mock data from the JSON file."""
     with MOCK_DATA_PATH.open() as f:
-        return json.load(f)
+        return json.load(f)  # type: ignore[return-value]
+{% else %}
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from {{ module_name }}.models import EmployeeRecord
+
+MOCK_DATA_PATH = Path(__file__).parent.parent / "src" / "{{ module_name }}" / "mock_data.json"
+
+
+@pytest.fixture()
+def mock_data() -> list[EmployeeRecord]:
+    """Load mock data from the JSON file."""
+    with MOCK_DATA_PATH.open() as f:
+        return json.load(f)  # type: ignore[return-value]
+{% endif %}

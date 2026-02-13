@@ -1,13 +1,9 @@
+{% if connector_category == 'datasource' and datasource_type == 'basic' %}
 from __future__ import annotations
-{% if connector_category == 'datasource' and datasource_type == 'async_streaming' %}
-
-import pytest
-{% endif %}
 
 from {{ module_name }}.data_client import DataClient
 
 
-{% if connector_category == 'datasource' and datasource_type == 'basic' %}
 def test_data_client_returns_data() -> None:
     client = DataClient()
     data = client.get_source_data()
@@ -22,6 +18,11 @@ def test_data_client_returns_correct_fields() -> None:
     assert "title" in record
     assert "content" in record
 {% elif connector_category == 'datasource' and datasource_type == 'streaming' %}
+from __future__ import annotations
+
+from {{ module_name }}.data_client import DataClient
+
+
 def test_data_client_returns_data() -> None:
     client = DataClient()
     data = list(client.get_source_data())
@@ -36,6 +37,13 @@ def test_data_client_returns_correct_fields() -> None:
     assert "title" in record
     assert "content" in record
 {% elif connector_category == 'datasource' and datasource_type == 'async_streaming' %}
+from __future__ import annotations
+
+import pytest
+
+from {{ module_name }}.data_client import DataClient
+
+
 @pytest.mark.asyncio()
 async def test_data_client_returns_data() -> None:
     client = DataClient()
@@ -52,6 +60,11 @@ async def test_data_client_returns_correct_fields() -> None:
     assert "title" in record
     assert "content" in record
 {% else %}
+from __future__ import annotations
+
+from {{ module_name }}.data_client import DataClient
+
+
 def test_data_client_returns_data() -> None:
     client = DataClient()
     data = client.get_source_data()

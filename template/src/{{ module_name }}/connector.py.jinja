@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import Sequence
+from collections.abc import Sequence
 
 from glean.indexing import BaseDatasourceConnector
 from glean.indexing.models import (
@@ -39,14 +39,10 @@ class Connector(BaseDatasourceConnector[SourceDocument]):
                 author=UserReferenceDefinition(name=record["author"]),
                 tags=record["tags"],
                 created_at=int(
-                    datetime.datetime.fromisoformat(
-                        record["created_at"].replace("Z", "+00:00")
-                    ).timestamp()
+                    datetime.datetime.fromisoformat(record["created_at"].replace("Z", "+00:00")).timestamp()
                 ),
                 updated_at=int(
-                    datetime.datetime.fromisoformat(
-                        record["updated_at"].replace("Z", "+00:00")
-                    ).timestamp()
+                    datetime.datetime.fromisoformat(record["updated_at"].replace("Z", "+00:00")).timestamp()
                 ),
             )
             documents.append(doc)
@@ -55,7 +51,7 @@ class Connector(BaseDatasourceConnector[SourceDocument]):
 from __future__ import annotations
 
 import datetime
-from typing import Sequence
+from collections.abc import Sequence
 
 from glean.indexing import BaseStreamingDatasourceConnector
 from glean.indexing.models import (
@@ -92,14 +88,10 @@ class Connector(BaseStreamingDatasourceConnector[SourceDocument]):
                 author=UserReferenceDefinition(name=record["author"]),
                 tags=record["tags"],
                 created_at=int(
-                    datetime.datetime.fromisoformat(
-                        record["created_at"].replace("Z", "+00:00")
-                    ).timestamp()
+                    datetime.datetime.fromisoformat(record["created_at"].replace("Z", "+00:00")).timestamp()
                 ),
                 updated_at=int(
-                    datetime.datetime.fromisoformat(
-                        record["updated_at"].replace("Z", "+00:00")
-                    ).timestamp()
+                    datetime.datetime.fromisoformat(record["updated_at"].replace("Z", "+00:00")).timestamp()
                 ),
             )
             documents.append(doc)
@@ -108,7 +100,7 @@ class Connector(BaseStreamingDatasourceConnector[SourceDocument]):
 from __future__ import annotations
 
 import datetime
-from typing import Sequence
+from collections.abc import Sequence
 
 from glean.indexing import BaseAsyncStreamingDatasourceConnector
 from glean.indexing.models import (
@@ -145,14 +137,10 @@ class Connector(BaseAsyncStreamingDatasourceConnector[SourceDocument]):
                 author=UserReferenceDefinition(name=record["author"]),
                 tags=record["tags"],
                 created_at=int(
-                    datetime.datetime.fromisoformat(
-                        record["created_at"].replace("Z", "+00:00")
-                    ).timestamp()
+                    datetime.datetime.fromisoformat(record["created_at"].replace("Z", "+00:00")).timestamp()
                 ),
                 updated_at=int(
-                    datetime.datetime.fromisoformat(
-                        record["updated_at"].replace("Z", "+00:00")
-                    ).timestamp()
+                    datetime.datetime.fromisoformat(record["updated_at"].replace("Z", "+00:00")).timestamp()
                 ),
             )
             documents.append(doc)
@@ -160,7 +148,7 @@ class Connector(BaseAsyncStreamingDatasourceConnector[SourceDocument]):
 {% else %}
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 from glean.indexing import BasePeopleConnector
 from glean.indexing.models import EmployeeInfoDefinition
