@@ -1,0 +1,152 @@
+# {{ project_name }}
+
+{{ description }}
+
+{% if connector_category == "datasource" %}
+This is a **datasource connector** that indexes documents and content into [Glean](https://www.glean.com/) using the `glean-indexing-sdk`.
+{% else %}
+This is a **people connector** that indexes employee/people data into [Glean](https://www.glean.com/) using the `glean-indexing-sdk`.
+{% endif %}
+
+## Prerequisites
+
+- [Python](https://www.python.org/) {{ python_version }}+
+- [uv](https://docs.astral.sh/uv/) (for dependency management and running scripts)
+
+## Setup
+
+1. Install dependencies:
+
+   ```bash
+   uv sync
+   ```
+
+2. Copy the environment template and fill in your credentials:
+
+   ```bash
+   cp env.template .env
+   ```
+
+3. Open `.env` and provide the required values:
+
+   - `GLEAN_INSTANCE` -- your Glean instance name (e.g. `my-company` for `my-company.glean.com`)
+   - `GLEAN_INDEXING_API_TOKEN` -- an indexing API token generated from your Glean admin console
+
+## Usage
+
+Run the connector:
+
+```bash
+uv run {{ project_name }}
+```
+
+Or equivalently:
+
+```bash
+uv run python -m {{ module_name }}
+```
+
+## Testing
+
+Run the test suite:
+
+```bash
+uv run pytest
+```
+
+Run with coverage reporting:
+
+```bash
+uv run pytest --cov --cov-report=term-missing
+```
+
+Lint and format checks:
+
+```bash
+uv run ruff check src/ tests/
+uv run ruff format --check src/ tests/
+```
+
+Type checking:
+
+```bash
+uv run pyright
+```
+
+## Project Structure
+
+```
+{{ project_name }}/
+├── src/
+│   └── {{ module_name }}/
+│       ├── __init__.py
+│       ├── __main__.py          # Entry point
+│       ├── connector.py         # Connector implementation
+│       └── data_client.py       # Data fetching logic
+├── tests/
+│   ├── conftest.py
+│   └── test_connector.py
+├── .env                         # Local credentials (not committed)
+├── env.template                 # Environment variable template
+├── pyproject.toml               # Project configuration
+├── .python-version
+├── .gitignore
+{% if include_docker %}├── Dockerfile
+├── docker-compose.yml
+{% endif %}└── .github/
+    └── workflows/
+        └── ci.yml               # GitHub Actions CI pipeline
+```
+{% if include_docker %}
+
+## Docker
+
+Build the Docker image:
+
+```bash
+docker build -t {{ project_name }} .
+```
+
+Run with Docker Compose (reads credentials from `.env`):
+
+```bash
+docker-compose up
+```
+
+Run in the background:
+
+```bash
+docker-compose up -d
+```
+
+To rebuild after making changes:
+
+```bash
+docker-compose up --build
+```
+{% endif %}
+
+## Next Steps
+
+The generated connector includes mock data to demonstrate the structure and SDK integration. To connect to a real data source:
+
+{% if connector_category == "datasource" %}
+1. **Update `data_client.py`** -- Replace the mock data with real API calls to your data source. Implement authentication, pagination, and error handling as needed.
+{% if datasource_type == "basic" %}
+2. **Implement data fetching** -- The basic connector loads all records at once via `get_documents()`. This pattern works well for small data sources with roughly 1,000 records or fewer.
+{% elif datasource_type == "streaming" %}
+2. **Implement data fetching** -- The streaming connector yields records in batches via a generator. This pattern works well for paginated APIs or larger datasets where loading everything into memory is not practical.
+{% elif datasource_type == "async_streaming" %}
+2. **Implement data fetching** -- The async streaming connector uses async generators for concurrent I/O. This pattern works well for large or high-latency data sources where parallelism improves throughput.
+{% endif %}
+3. **Update `connector.py`** -- Adjust the datasource definition (display name, object types, URL patterns) to match your data source.
+4. **Configure permissions** -- If your data source has access controls, implement document-level permissions so Glean respects them.
+5. **Add tests** -- Write tests against your real data structures to ensure the connector behaves correctly.
+6. **Set up scheduling** -- Run the connector on a recurring schedule (e.g. via cron, a task scheduler, or a long-running container) to keep Glean data fresh.
+{% else %}
+1. **Update `data_client.py`** -- Replace the mock data with real API calls to your identity provider or HR system. Implement authentication and pagination as needed.
+2. **Update `connector.py`** -- Adjust the people fields mapping to match the attributes available from your data source.
+3. **Map employee attributes** -- Ensure fields like name, email, title, department, manager, and profile photo URL are correctly populated.
+4. **Add tests** -- Write tests against your real data structures to ensure the connector behaves correctly.
+5. **Set up scheduling** -- Run the connector on a recurring schedule (e.g. via cron, a task scheduler, or a long-running container) to keep Glean data fresh.
+{% endif %}

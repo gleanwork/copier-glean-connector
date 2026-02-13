@@ -1,0 +1,104 @@
+{% if connector_category == 'datasource' and datasource_type == 'basic' %}
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, Sequence
+
+from glean.indexing import BaseDataClient
+
+from {{ module_name }}.models import SourceDocument
+
+_MOCK_DATA_PATH = Path(__file__).parent / "mock_data.json"
+
+
+class DataClient(BaseDataClient[SourceDocument]):
+    """Fetches documents from the external data source.
+
+    Replace the mock implementation with real API calls.
+    """
+
+    def get_source_data(self, **kwargs: Any) -> Sequence[SourceDocument]:
+        """Return all documents from the data source."""
+        with _MOCK_DATA_PATH.open() as f:
+            data: list[SourceDocument] = json.load(f)
+        return data
+{% elif connector_category == 'datasource' and datasource_type == 'streaming' %}
+from __future__ import annotations
+
+import json
+from collections.abc import Generator
+from pathlib import Path
+from typing import Any
+
+from glean.indexing import BaseStreamingDataClient
+
+from {{ module_name }}.models import SourceDocument
+
+_MOCK_DATA_PATH = Path(__file__).parent / "mock_data.json"
+
+
+class DataClient(BaseStreamingDataClient[SourceDocument]):
+    """Fetches documents from the external data source in batches.
+
+    Replace the mock implementation with real paginated API calls.
+    """
+
+    def get_source_data(self, **kwargs: Any) -> Generator[SourceDocument, None, None]:
+        """Yield documents one at a time from the data source."""
+        with _MOCK_DATA_PATH.open() as f:
+            data: list[SourceDocument] = json.load(f)
+        yield from data
+{% elif connector_category == 'datasource' and datasource_type == 'async_streaming' %}
+from __future__ import annotations
+
+import json
+from collections.abc import AsyncGenerator
+from pathlib import Path
+from typing import Any
+
+from glean.indexing import BaseAsyncStreamingDataClient
+
+from {{ module_name }}.models import SourceDocument
+
+_MOCK_DATA_PATH = Path(__file__).parent / "mock_data.json"
+
+
+class DataClient(BaseAsyncStreamingDataClient[SourceDocument]):
+    """Fetches documents from the external data source with async I/O.
+
+    Replace the mock implementation with real async API calls.
+    """
+
+    async def get_source_data(self, **kwargs: Any) -> AsyncGenerator[SourceDocument, None]:
+        """Yield documents asynchronously from the data source."""
+        with _MOCK_DATA_PATH.open() as f:
+            data: list[SourceDocument] = json.load(f)
+        for item in data:
+            yield item
+{% else %}
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, Sequence
+
+from glean.indexing import BaseDataClient
+
+from {{ module_name }}.models import EmployeeRecord
+
+_MOCK_DATA_PATH = Path(__file__).parent / "mock_data.json"
+
+
+class DataClient(BaseDataClient[EmployeeRecord]):
+    """Fetches employee records from the external data source.
+
+    Replace the mock implementation with real API calls.
+    """
+
+    def get_source_data(self, **kwargs: Any) -> Sequence[EmployeeRecord]:
+        """Return all employee records from the data source."""
+        with _MOCK_DATA_PATH.open() as f:
+            data: list[EmployeeRecord] = json.load(f)
+        return data
+{% endif %}

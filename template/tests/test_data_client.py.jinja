@@ -1,0 +1,68 @@
+from __future__ import annotations
+{% if connector_category == 'datasource' and datasource_type == 'async_streaming' %}
+
+import pytest
+{% endif %}
+
+from {{ module_name }}.data_client import DataClient
+
+
+{% if connector_category == 'datasource' and datasource_type == 'basic' %}
+def test_data_client_returns_data() -> None:
+    client = DataClient()
+    data = client.get_source_data()
+    assert len(data) == 5
+
+
+def test_data_client_returns_correct_fields() -> None:
+    client = DataClient()
+    data = client.get_source_data()
+    record = data[0]
+    assert "id" in record
+    assert "title" in record
+    assert "content" in record
+{% elif connector_category == 'datasource' and datasource_type == 'streaming' %}
+def test_data_client_returns_data() -> None:
+    client = DataClient()
+    data = list(client.get_source_data())
+    assert len(data) == 5
+
+
+def test_data_client_returns_correct_fields() -> None:
+    client = DataClient()
+    data = list(client.get_source_data())
+    record = data[0]
+    assert "id" in record
+    assert "title" in record
+    assert "content" in record
+{% elif connector_category == 'datasource' and datasource_type == 'async_streaming' %}
+@pytest.mark.asyncio()
+async def test_data_client_returns_data() -> None:
+    client = DataClient()
+    data = [item async for item in client.get_source_data()]
+    assert len(data) == 5
+
+
+@pytest.mark.asyncio()
+async def test_data_client_returns_correct_fields() -> None:
+    client = DataClient()
+    data = [item async for item in client.get_source_data()]
+    record = data[0]
+    assert "id" in record
+    assert "title" in record
+    assert "content" in record
+{% else %}
+def test_data_client_returns_data() -> None:
+    client = DataClient()
+    data = client.get_source_data()
+    assert len(data) == 5
+
+
+def test_data_client_returns_correct_fields() -> None:
+    client = DataClient()
+    data = client.get_source_data()
+    record = data[0]
+    assert "employee_id" in record
+    assert "email" in record
+    assert "first_name" in record
+{% endif %}

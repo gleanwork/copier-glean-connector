@@ -1,0 +1,96 @@
+from __future__ import annotations
+
+from unittest.mock import MagicMock, patch
+{% if connector_category == 'datasource' %}
+
+from glean.indexing.models import DocumentDefinition
+
+from {{ module_name }}.connector import Connector
+from {{ module_name }}.data_client import DataClient
+from {{ module_name }}.models import SourceDocument
+{% if datasource_type == 'basic' %}
+
+_PATCH_TARGET = "glean.indexing.connectors.base_datasource_connector.api_client"
+{% elif datasource_type == 'streaming' %}
+
+_PATCH_TARGET = "glean.indexing.connectors.base_streaming_datasource_connector.api_client"
+{% else %}
+
+_PATCH_TARGET = "glean.indexing.connectors.base_async_streaming_datasource_connector.api_client"
+{% endif %}
+
+
+def test_transform_returns_document_definitions(mock_data: list[SourceDocument]) -> None:
+    with patch(_PATCH_TARGET) as mock_api:
+        mock_api.return_value = MagicMock()
+{% if datasource_type == 'async_streaming' %}
+        connector = Connector(name="{{ connector_name }}", async_data_client=DataClient())
+{% else %}
+        connector = Connector(name="{{ connector_name }}", data_client=DataClient())
+{% endif %}
+        results = connector.transform(mock_data)
+        assert len(results) == len(mock_data)
+        assert all(isinstance(doc, DocumentDefinition) for doc in results)
+
+
+def test_transform_preserves_content(mock_data: list[SourceDocument]) -> None:
+    with patch(_PATCH_TARGET) as mock_api:
+        mock_api.return_value = MagicMock()
+{% if datasource_type == 'async_streaming' %}
+        connector = Connector(name="{{ connector_name }}", async_data_client=DataClient())
+{% else %}
+        connector = Connector(name="{{ connector_name }}", data_client=DataClient())
+{% endif %}
+        results = connector.transform(mock_data)
+        for doc, source in zip(results, mock_data):
+            assert doc.title == source["title"]
+            assert doc.body is not None
+            assert doc.body.text_content == source["content"]
+
+
+def test_transform_handles_empty_input() -> None:
+    with patch(_PATCH_TARGET) as mock_api:
+        mock_api.return_value = MagicMock()
+{% if datasource_type == 'async_streaming' %}
+        connector = Connector(name="{{ connector_name }}", async_data_client=DataClient())
+{% else %}
+        connector = Connector(name="{{ connector_name }}", data_client=DataClient())
+{% endif %}
+        results = connector.transform([])
+        assert results == []
+{% else %}
+
+from glean.indexing.models import EmployeeInfoDefinition
+
+from {{ module_name }}.connector import Connector
+from {{ module_name }}.data_client import DataClient
+from {{ module_name }}.models import EmployeeRecord
+
+_PATCH_TARGET = "glean.indexing.connectors.base_people_connector.api_client"
+
+
+def test_transform_returns_employee_definitions(mock_data: list[EmployeeRecord]) -> None:
+    with patch(_PATCH_TARGET) as mock_api:
+        mock_api.return_value = MagicMock()
+        connector = Connector(name="{{ connector_name }}", data_client=DataClient())
+        results = connector.transform(mock_data)
+        assert len(results) == len(mock_data)
+        assert all(isinstance(emp, EmployeeInfoDefinition) for emp in results)
+
+
+def test_transform_preserves_email(mock_data: list[EmployeeRecord]) -> None:
+    with patch(_PATCH_TARGET) as mock_api:
+        mock_api.return_value = MagicMock()
+        connector = Connector(name="{{ connector_name }}", data_client=DataClient())
+        results = connector.transform(mock_data)
+        for emp, source in zip(results, mock_data):
+            assert emp.email == source["email"]
+
+
+def test_transform_handles_empty_input() -> None:
+    with patch(_PATCH_TARGET) as mock_api:
+        mock_api.return_value = MagicMock()
+        connector = Connector(name="{{ connector_name }}", data_client=DataClient())
+        results = connector.transform([])
+        assert results == []
+{% endif %}

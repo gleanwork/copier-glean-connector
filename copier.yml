@@ -1,0 +1,110 @@
+_subdirectory: template
+
+_tasks:
+  - "git init"
+  - "uv sync"
+  - "uv run ruff format ."
+
+# --- Project metadata ---
+
+project_name:
+  type: str
+  default: my-glean-connector
+  help: >-
+    Package/directory name (kebab-case, e.g. "my-glean-connector").
+
+module_name:
+  type: str
+  default: "{{ project_name | lower | replace('-', '_') | replace(' ', '_') }}"
+  help: >-
+    Python module name (snake_case). Derived from project_name by default.
+
+description:
+  type: str
+  default: A custom Glean indexing connector
+  help: >-
+    Short project description.
+
+author_name:
+  type: str
+  default: ""
+  help: >-
+    Author name.
+
+author_email:
+  type: str
+  default: ""
+  help: >-
+    Author email.
+
+license:
+  type: str
+  choices:
+    - MIT
+    - Apache-2.0
+    - BSD-3-Clause
+    - Proprietary
+  default: MIT
+  help: >-
+    License for the generated project.
+
+# --- Connector type ---
+
+connector_category:
+  type: str
+  choices:
+    datasource: "Datasource — index documents and content into Glean"
+    people: "People — index employee/people data into Glean"
+  default: datasource
+  help: >-
+    Are you indexing documents/content, or people/employee data?
+
+datasource_type:
+  type: str
+  when: "{{ connector_category == 'datasource' }}"
+  choices:
+    basic: "Basic — small data sources, pulls everything at once"
+    streaming: "Streaming — paginated APIs, yields records in batches"
+    async_streaming: "Async Streaming — concurrent I/O with async generators"
+  default: basic
+  help: >-
+    Basic: BaseDatasourceConnector + BaseDataClient — best for small data
+    sources (~1,000 records) where all data fits in memory.
+
+    Streaming: BaseStreamingDatasourceConnector + BaseStreamingDataClient —
+    best for paginated APIs or larger datasets, yields records in batches.
+
+    Async Streaming: BaseAsyncStreamingDatasourceConnector +
+    BaseAsyncStreamingDataClient — best for large or high-latency data
+    sources where you want concurrent I/O.
+
+connector_name:
+  type: str
+  default: "{{ module_name }}"
+  help: >-
+    Snake_case datasource name registered in Glean (e.g. "my_datasource").
+
+datasource_display_name:
+  type: str
+  default: "{{ connector_name | replace('_', ' ') | title }}"
+  help: >-
+    Human-readable name shown in the Glean UI.
+
+# --- Tooling options ---
+
+include_docker:
+  type: bool
+  default: true
+  help: >-
+    Include Dockerfile and docker-compose.yml for containerized deployment.
+
+python_version:
+  type: str
+  choices:
+    - "3.10"
+    - "3.11"
+    - "3.12"
+    - "3.13"
+  default: "3.10"
+  help: >-
+    Minimum Python version for the project.

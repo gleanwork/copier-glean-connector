@@ -1,0 +1,85 @@
+{% if connector_category == 'datasource' and datasource_type == 'async_streaming' %}
+"""CLI entry point for {{ project_name }}."""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+
+from dotenv import load_dotenv
+
+from glean.indexing.models import IndexingMode
+
+from {{ module_name }}.connector import Connector
+from {{ module_name }}.data_client import DataClient
+
+load_dotenv()
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+
+
+def main() -> None:
+    """Run the connector."""
+    data_client = DataClient()
+    connector = Connector(name="{{ connector_name }}", async_data_client=data_client)
+    connector.configure_datasource()
+    asyncio.run(connector.index_data_async(mode=IndexingMode.FULL))
+
+
+if __name__ == "__main__":
+    main()
+{% elif connector_category == 'datasource' %}
+"""CLI entry point for {{ project_name }}."""
+
+from __future__ import annotations
+
+import logging
+
+from dotenv import load_dotenv
+
+from glean.indexing.models import IndexingMode
+
+from {{ module_name }}.connector import Connector
+from {{ module_name }}.data_client import DataClient
+
+load_dotenv()
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+
+
+def main() -> None:
+    """Run the connector."""
+    data_client = DataClient()
+    connector = Connector(name="{{ connector_name }}", data_client=data_client)
+    connector.configure_datasource()
+    connector.index_data(mode=IndexingMode.FULL)
+
+
+if __name__ == "__main__":
+    main()
+{% else %}
+"""CLI entry point for {{ project_name }}."""
+
+from __future__ import annotations
+
+import logging
+
+from dotenv import load_dotenv
+
+from glean.indexing.models import IndexingMode
+
+from {{ module_name }}.connector import Connector
+from {{ module_name }}.data_client import DataClient
+
+load_dotenv()
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+
+
+def main() -> None:
+    """Run the connector."""
+    data_client = DataClient()
+    connector = Connector(name="{{ connector_name }}", data_client=data_client)
+    connector.index_data(mode=IndexingMode.FULL)
+
+
+if __name__ == "__main__":
+    main()
+{% endif %}

@@ -1,0 +1,21 @@
+# Build stage
+FROM python:{{ python_version }}-slim AS builder
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --no-dev --frozen
+
+COPY src/ src/
+
+# Runtime stage
+FROM python:{{ python_version }}-slim
+
+WORKDIR /app
+COPY --from=builder /app/.venv .venv
+COPY --from=builder /app/src src
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+CMD ["python", "-m", "{{ module_name }}"]
