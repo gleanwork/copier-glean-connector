@@ -3,6 +3,7 @@ _subdirectory: template
 _tasks:
   - "git init"
   - "uv sync"
+  - "uv run ruff check --fix ."
   - "uv run ruff format ."
 
 # --- Project metadata ---
