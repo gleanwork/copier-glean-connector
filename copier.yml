@@ -53,8 +53,8 @@ license:
 connector_category:
   type: str
   choices:
-    datasource: "Datasource — index documents and content into Glean"
-    people: "People — index employee/people data into Glean"
+    "Datasource — index documents and content into Glean": datasource
+    "People — index employee/people data into Glean": people
   default: datasource
   help: >-
     Are you indexing documents/content, or people/employee data?
@@ -63,9 +63,9 @@ datasource_type:
   type: str
   when: "{{ connector_category == 'datasource' }}"
   choices:
-    basic: "Basic — small data sources, pulls everything at once"
-    streaming: "Streaming — paginated APIs, yields records in batches"
-    async_streaming: "Async Streaming — concurrent I/O with async generators"
+    "Basic — small data sources, pulls everything at once": basic
+    "Streaming — paginated APIs, yields records in batches": streaming
+    "Async Streaming — concurrent I/O with async generators": async_streaming
   default: basic
   help: >-
     Basic: BaseDatasourceConnector + BaseDataClient — best for small data
