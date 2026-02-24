@@ -1,4 +1,4 @@
-# Glean Connector Template
+# copier-glean-connector
 
 A [copier](https://copier.readthedocs.io/) template for scaffolding custom [Glean](https://www.glean.com/) indexing connectors using the `glean-indexing-sdk`.
 
@@ -19,7 +19,7 @@ uv tool install copier
 Generate a new connector project:
 
 ```bash
-copier copy gh:gleanwork/glean-connector-template my-connector
+copier copy gh:gleanwork/copier-glean-connector my-connector
 ```
 
 The wizard will prompt for project name, connector type, and other options. After generation, the template automatically runs `git init`, `uv sync`, and `ruff format`.
