@@ -2,9 +2,11 @@ _subdirectory: template
 
 _tasks:
   - "git init"
-  - "uv sync"
-  - "uv run ruff check --fix ."
-  - "uv run ruff format ."
+  - "mise trust mise.toml"
+  - "mise install"
+  - "mise run install"
+  - "mise run lint:fix"
+  - "mise run format"
 
 # --- Project metadata ---
 
