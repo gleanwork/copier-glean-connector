@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-template:
+    name: Test Template Generation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+        with:
+          cache: true
+          mise_toml: |
+            [tools]
+            python = "3.12"
+            uv = "latest"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install copier
+        run: uv tool install copier
+
+      - name: Generate connector project from template
+        run: |
+          copier copy --trust --defaults \
+            --data project_name=test-connector \
+            --data connector_category=datasource \
+            --data datasource_type=basic \
+            . /tmp/test-connector
+
+      - name: Verify generated structure
+        run: |
+          test -f /tmp/test-connector/mise.toml
+          test -f /tmp/test-connector/pyproject.toml
+          test -d /tmp/test-connector/src/test_connector
+          grep -q "glean-indexing-sdk" /tmp/test-connector/pyproject.toml
+
+      - name: Verify SDK range is parameterized
+        run: |
+          ! grep -q "glean-indexing-sdk>=0.3" /tmp/test-connector/pyproject.toml
+
+      - name: Run mise install in generated project
+        working-directory: /tmp/test-connector
+        run: |
+          mise trust mise.toml
+          mise install
+          mise run install
