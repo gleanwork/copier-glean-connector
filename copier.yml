@@ -101,6 +101,13 @@ include_docker:
   help: >-
     Include Dockerfile and docker-compose.yml for containerized deployment.
 
+sdk_range:
+  type: str
+  default: ">=1.0.0b1,<2.0"
+  help: >-
+    Compatible glean-indexing-sdk version range. Passed automatically by
+    connector-mcp at scaffold time. Override only for testing.
+
 python_version:
   type: str
   choices:
